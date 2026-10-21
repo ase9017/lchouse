@@ -17,14 +17,14 @@ export const Route = createFileRoute("/")({
 });
 
 const ICONS: Record<string, typeof Camera> = { cam: Camera, rec: HardDrive, net: Network, acc: Cable, misc: Package };
-const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]));
+const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p])) as Record<string, Product>;
 
 function Index() {
   const [cat, setCat] = useState("all");
   const [q, setQ] = useState("");
   const [sort, setSort] = useState("def");
   const [shown, setShown] = useState(24);
-  const [cart, setCart] = useState<Record<string, number>>({});
+  const [cart, setCart] = useState<Record<string, number>>({} as Record<string, number>);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -43,14 +43,14 @@ function Index() {
   const add = (id: string, d = 1) =>
     setCart((c) => {
       const n = { ...c, [id]: (c[id] || 0) + d };
-      if (n[id] <= 0) delete n[id];
+      if ((n[id] ?? 0) <= 0) delete n[id];
       return n;
     });
   const ids = Object.keys(cart).filter((k) => byId[k]);
-  const count = ids.reduce((s, k) => s + cart[k], 0);
-  const total = ids.reduce((s, k) => s + cart[k] * byId[k].p, 0);
+  const count = ids.reduce((s, k) => s + (cart[k] ?? 0), 0);
+  const total = ids.reduce((s, k) => s + (cart[k] ?? 0) * byId[k].p, 0);
   const sendOrder = () => {
-    const msg = "طلب جديد - لايت كرنت هاوس\n" + ids.map((k) => `• ${byId[k].n} × ${cart[k]} = ${byId[k].p * cart[k]} ${CUR}`).join("\n") + `\nالإجمالي: ${total} ${CUR}`;
+    const msg = "طلب جديد - لايت كرنت هاوس\n" + ids.map((k) => `• ${byId[k].n} × ${(cart[k] ?? 0)} = ${byId[k].p * (cart[k] ?? 0)} ${CUR}`).join("\n") + `\nالإجمالي: ${total} ${CUR}`;
     window.open(`https://wa.me/${CONTACT.wa}?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
@@ -172,10 +172,10 @@ function Index() {
                   <div className="mt-2 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <button onClick={() => add(k, 1)} aria-label="زيادة" className="rounded border border-border p-1"><Plus className="h-3 w-3" /></button>
-                      {nf(cart[k])}
+                      {nf((cart[k] ?? 0))}
                       <button onClick={() => add(k, -1)} aria-label="إنقاص" className="rounded border border-border p-1"><Minus className="h-3 w-3" /></button>
                     </div>
-                    <b>{nf(byId[k].p * cart[k])} {CUR}</b>
+                    <b>{nf(byId[k].p * (cart[k] ?? 0))} {CUR}</b>
                   </div>
                 </div>
               ))}
