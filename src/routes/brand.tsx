@@ -105,7 +105,7 @@ function Brand() {
                 <div className="space-y-1.5 text-sm">
                   <p className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /><span dir="ltr">{CONTACT.phone}</span></p>
                   <p className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" />{CONTACT.email}</p>
-                  <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-primary" />كاميرات المراقبة · الشبكات · التيار الخفيف</p>
+                  <p className="flex items-center gap-2"><Globe className="h-4 w-4 text-primary" />كاميرات المراقبة · الشبكات · الإكسسوارات والأدوات الإلكترونية</p>
                 </div>
               </div>
             </div>
