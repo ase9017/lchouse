@@ -48,9 +48,9 @@ function Index() {
     });
   const ids = Object.keys(cart).filter((k) => byId[k]);
   const count = ids.reduce((s, k) => s + (cart[k] ?? 0), 0);
-  const total = ids.reduce((s, k) => s + (cart[k] ?? 0) * byId[k].p, 0);
+  const total = ids.reduce((s, k) => s + (cart[k] ?? 0) * byId[k]!.p, 0);
   const sendOrder = () => {
-    const msg = "طلب جديد - لايت كرنت هاوس\n" + ids.map((k) => `• ${byId[k].n} × ${(cart[k] ?? 0)} = ${byId[k].p * (cart[k] ?? 0)} ${CUR}`).join("\n") + `\nالإجمالي: ${total} ${CUR}`;
+    const msg = "طلب جديد - لايت كرنت هاوس\n" + ids.map((k) => `• ${byId[k]!.n} × ${(cart[k] ?? 0)} = ${byId[k]!.p * (cart[k] ?? 0)} ${CUR}`).join("\n") + `\nالإجمالي: ${total} ${CUR}`;
     window.open(`https://wa.me/${CONTACT.wa}?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
@@ -168,14 +168,14 @@ function Index() {
               {!ids.length && <p className="py-10 text-center text-muted-foreground">السلة فارغة</p>}
               {ids.map((k) => (
                 <div key={k} className="rounded-md border border-border p-3">
-                  <p className="text-sm">{byId[k].n}</p>
+                  <p className="text-sm">{byId[k]!.n}</p>
                   <div className="mt-2 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <button onClick={() => add(k, 1)} aria-label="زيادة" className="rounded border border-border p-1"><Plus className="h-3 w-3" /></button>
                       {nf((cart[k] ?? 0))}
                       <button onClick={() => add(k, -1)} aria-label="إنقاص" className="rounded border border-border p-1"><Minus className="h-3 w-3" /></button>
                     </div>
-                    <b>{nf(byId[k].p * (cart[k] ?? 0))} {CUR}</b>
+                    <b>{nf(byId[k]!.p * (cart[k] ?? 0))} {CUR}</b>
                   </div>
                 </div>
               ))}
