@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Camera, HardDrive, Network, Cable, Package, ShoppingBag, Search, X, Plus, Minus, ShieldCheck, Zap, Clock, Phone, Mail, MessageCircle } from "lucide-react";
+import { Camera, HardDrive, Usb, Network, Cable, Package, ShoppingBag, Search, X, Plus, Minus, ShieldCheck, Zap, Clock, Phone, Mail, MessageCircle } from "lucide-react";
 import { SiteHeader, Logo } from "@/components/SiteHeader";
 import { PRODUCTS, FEATURED, CATS, CONTACT, nf, CUR, type Product } from "@/lib/brand";
 
@@ -8,15 +8,15 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "لايت كرنت هاوس | كاميرات المراقبة والشبكات" },
-      { name: "description", content: "كاميرات، مسجلات، وشبكات للمركّبين وأصحاب الأعمال بموديلات وأسعار واضحة." },
+      { name: "description", content: "كاميرات، مسجلات، شبكات، وإكسسوارات وأدوات إلكترونية: هاردات، فلاشات، كروت ذاكرة وأجهزة، بموديلات وأسعار واضحة." },
       { property: "og:title", content: "لايت كرنت هاوس | كاميرات المراقبة والشبكات" },
-      { property: "og:description", content: "كاميرات، مسجلات، وشبكات بموديلات وأسعار واضحة." },
+      { property: "og:description", content: "كاميرات، مسجلات، شبكات، هاردات، فلاشات وإكسسوارات إلكترونية بأسعار واضحة." },
     ],
   }),
   component: Index,
 });
 
-const ICONS: Record<string, typeof Camera> = { cam: Camera, rec: HardDrive, net: Network, acc: Cable, misc: Package };
+const ICONS: Record<string, typeof Camera> = { cam: Camera, rec: HardDrive, net: Network, acc: Cable, misc: Package, elec: Usb };
 const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p])) as Record<string, Product>;
 
 function Index() {
@@ -77,7 +77,7 @@ function Index() {
             <h1 className="mt-6 text-4xl font-bold leading-tight md:text-6xl">
               كل ما يثبت النظام.<br /><span className="text-accent">ولا يترك مجالاً للشك.</span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg opacity-80">كاميرات، مسجلات، وشبكات للمركّبين وأصحاب الأعمال. موديلات معروفة، مواصفات واضحة، واختيار أسهل من أول زيارة.</p>
+            <p className="mt-6 max-w-lg text-lg opacity-80">كاميرات، مسجلات، وشبكات، بالإضافة إلى الإكسسوارات والأدوات الإلكترونية من هاردات وفلاشات وكروت ذاكرة وأجهزة، للمركّبين وأصحاب الأعمال والأفراد. موديلات معروفة، مواصفات واضحة، واختيار أسهل من أول زيارة.</p>
             <a href="#products" className="mt-8 inline-flex h-12 items-center rounded-md bg-accent px-6 font-semibold text-accent-foreground">اكتشف المنتجات ←</a>
           </div>
           <div className="grid content-center gap-3">
@@ -132,7 +132,7 @@ function Index() {
       {/* About */}
       <section id="about" className="mx-auto max-w-6xl scroll-mt-24 px-5 py-16">
         <h2 className="text-3xl font-bold">من نحن</h2>
-        <p className="mt-4 max-w-3xl text-lg text-muted-foreground">لايت كرنت هاوس متجر متخصص في كاميرات المراقبة وأجهزة التسجيل والشبكات وملحقات التركيب، نخدم المركّبين وأصحاب الأعمال والأفراد. نؤمن أن الاختيار الصحيح يبدأ من معلومة واضحة.</p>
+        <p className="mt-4 max-w-3xl text-lg text-muted-foreground">لايت كرنت هاوس متجر متخصص في كاميرات المراقبة وأجهزة التسجيل والشبكات وملحقات التركيب، إلى جانب الإكسسوارات والأدوات الإلكترونية عموماً مثل الهاردات والفلاشات وكروت الذاكرة والأجهزة والإكسسوارات، نخدم المركّبين وأصحاب الأعمال والأفراد. نؤمن أن الاختيار الصحيح يبدأ من معلومة واضحة.</p>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {[["رؤيتنا", "أن نكون الوجهة الأولى الموثوقة لمعدات الأمن والمراقبة، حيث يجد كل مركّب وصاحب عمل ما يحتاجه بثقة."], ["رسالتنا", "توفير معدات مراقبة وشبكات بموديلات واضحة وأسعار شفافة، ومساعدة العميل على اختيار الأنسب لمشروعه."], ["هدفنا", "تبسيط رحلة الشراء، ورفع جودة التركيبات، وبناء علاقات طويلة قائمة على الوضوح والالتزام."]].map(([t, d], i) => (
             <div key={t} className="rounded-lg border border-border bg-card p-6 shadow-card">
