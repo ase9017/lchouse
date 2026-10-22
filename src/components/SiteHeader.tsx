@@ -5,7 +5,8 @@ export function Logo({ light = false }: { light?: boolean }) {
   return (
     <Link to="/" className="flex items-center gap-3">
       <span className="grid h-11 place-items-center rounded-md bg-card px-2.5">
-        <img src={icon} alt="" height={44} className="h-full w-auto" />
+        <img src={icon} alt="" className="h-7 w-auto" />
+
       </span>
       <span className="leading-tight">
         <b className={`block text-lg ${light ? "text-ink-foreground" : "text-foreground"}`}>لايت كرنت هاوس</b>
