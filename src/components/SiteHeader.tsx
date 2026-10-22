@@ -4,8 +4,8 @@ import icon from "@/assets/logo-icon.png";
 export function Logo({ light = false }: { light?: boolean }) {
   return (
     <Link to="/" className="flex items-center gap-3">
-      <span className="grid h-11 w-11 place-items-center rounded-md bg-card p-1">
-        <img src={icon} alt="" width={1024} height={1024} className="h-full w-full object-contain" />
+      <span className="grid h-11 place-items-center rounded-md bg-card px-2.5">
+        <img src={icon} alt="" height={44} className="h-full w-auto" />
       </span>
       <span className="leading-tight">
         <b className={`block text-lg ${light ? "text-ink-foreground" : "text-foreground"}`}>لايت كرنت هاوس</b>
