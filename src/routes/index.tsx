@@ -170,8 +170,8 @@ function Card({ p, feat, onAdd }: { p: Product; feat?: boolean; onAdd: () => voi
   const st = p.s <= 1 ? "آخر قطعة" : p.s <= 3 ? "كمية محدودة" : "متوفر";
   return (
     <article className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition hover:-translate-y-0.5 hover:shadow-card">
-      <div className="relative grid h-48 place-items-center bg-card">
-        <img src={productImage(p)} alt={`صورة توضيحية — ${p.n}`} loading="lazy" width={512} height={512} className="h-full w-full object-contain p-5" />
+      <div className="relative h-48 shrink-0 overflow-hidden bg-card">
+        <img src={productImage(p)} alt={`صورة توضيحية — ${p.n}`} loading="lazy" width={512} height={512} className="absolute inset-0 h-full w-full object-contain p-5" />
         <span className="absolute bottom-2 start-3 rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">صورة توضيحية</span>
         {p.b && <span dir="ltr" className="absolute end-3 top-3 font-display text-[10px] font-bold tracking-widest text-muted-foreground">{p.b.toUpperCase()}</span>}
         {feat && <span className="absolute start-3 top-3 rounded bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">اختيار الفنيين</span>}
