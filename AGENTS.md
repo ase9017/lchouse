@@ -10,5 +10,6 @@
 <!-- LOVABLE:END -->
 
 - Product illustrations are bundled by hardware type and mapped in a shared image selector; do not present them as exact model photography.
-- Quotations use a public validated write-only server function with server-calculated catalogue totals; customer rows remain private with service-role-only access to prevent disclosure.
-- The quotation cart collects details, persists the request, then offers a WhatsApp handoff for staff review; it never labels storage or handoff as a completed sale or delivered message.
+- Quotations use a public validated write-only server function with server-calculated catalogue totals; company reads and status updates require authenticated administrator roles and RLS.
+- The quotation cart confirms durable company receipt without requiring an external handoff; external messaging and payments remain optional integrations.
+- Company administrator assignment occurs only after the configured company email is verified by hosted authentication; ordinary account creation must not grant quote access.

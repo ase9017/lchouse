@@ -26,6 +26,7 @@ export function SiteHeader({ right }: { right?: React.ReactNode }) {
         <nav className="ms-auto hidden gap-6 text-sm font-medium md:flex">
           <Link to="/" hash="products" className="hover:text-primary">المنتجات</Link>
           <Link to="/" hash="about" className="hover:text-primary">من نحن</Link>
+          <Link to="/company-quotes" className="hover:text-primary">طلبات الشركة</Link>
         </nav>
         {right}
       </div>

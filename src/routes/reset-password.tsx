@@ -1,0 +1,12 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
+import { z } from "zod";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+export const Route = createFileRoute("/reset-password")({ head: () => ({ meta: [{ title: "استعادة كلمة المرور | لايت كرنت هاوس" }, { name: "description", content: "تعيين كلمة مرور جديدة لحساب الشركة." }, { property: "og:title", content: "استعادة كلمة المرور | لايت كرنت هاوس" }, { property: "og:description", content: "استعادة آمنة لحساب الشركة." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: ResetPassword });
+function ResetPassword() {
+  const [valid, setValid] = useState(false); const [password, setPassword] = useState(""); const [message, setMessage] = useState(""); const [busy, setBusy] = useState(false);
+  useEffect(() => { setValid(new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery"); const { data } = supabase.auth.onAuthStateChange((event) => { if (event === "PASSWORD_RECOVERY") setValid(true); }); return () => data.subscription.unsubscribe(); }, []);
+  async function submit(e: FormEvent) { e.preventDefault(); if (!valid) return; if (!z.string().min(8).max(128).safeParse(password).success) { setMessage("كلمة المرور ٨ أحرف على الأقل"); return; } setBusy(true); const { error } = await supabase.auth.updateUser({ password }); setMessage(error ? "تعذر تغيير كلمة المرور" : "تم تغيير كلمة المرور؛ يمكنك تسجيل الدخول الآن"); setBusy(false); }
+  return <main className="mx-auto max-w-md px-5 py-20"><h1 className="text-2xl font-bold">كلمة مرور جديدة</h1>{valid ? <form onSubmit={submit} className="mt-6 space-y-4"><label htmlFor="new-password">كلمة المرور الجديدة</label><input id="new-password" type="password" autoComplete="new-password" maxLength={128} value={password} onChange={(e) => setPassword(e.target.value)} className="h-11 w-full rounded-md border border-input bg-card px-3" /><Button disabled={busy} className="w-full">حفظ كلمة المرور</Button></form> : <p className="mt-5">افتح رابط الاستعادة الذي وصلك بالبريد.</p>}<p role="status" className="mt-4">{message}</p><Button asChild variant="link" className="mt-5"><Link to="/auth">دخول الشركة</Link></Button></main>;
+}
