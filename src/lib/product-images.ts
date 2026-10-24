@@ -22,7 +22,12 @@ export function productImage(p: Product): string {
   const t = `${p.n} ${p.m}`.toLowerCase();
   if (/cable|سلك|لفه|لفة|وصلة كاميرا|extention usb/.test(t)) return cable;
   if (/حامل|pad|بوكس|box|بواط|لقم/.test(t)) return assortment;
+  if (p.c === "cam" || /camera|كاميرا|tc 70|tapo/.test(t)) {
+    if (/imou|ايمو|ezviz|tapo|wifi|ptz|mc510/.test(t)) return wifi;
+    return /خارجي|out|hfw|b1|b5|2ce16|1021|1023|ipc-b|uac-b/.test(t) ? bullet : turret;
+  }
   if (/memory|كارت ذاكرة/.test(t)) return memory;
+  if (/rack external hdd/.test(t)) return adapter;
   if (/cover|convert|converter|adapter|adaptor|ادبتر|usb|balun|gender|spliter|اسبليتر/.test(t)) return adapter;
   if (/hdd|هارد/.test(t)) return hdd;
   if (/mouse|ماوس/.test(t)) return mouse;
@@ -34,9 +39,5 @@ export function productImage(p: Product): string {
   if (/rack|راك/.test(t)) return rack;
   if (p.c === "rec") return recorder;
   if (p.c === "net") return /switch|سويتش/.test(t) ? network : router;
-  if (p.c === "cam" || /camera|كاميرا|tc 70|tc 70|tapo/.test(t)) {
-    if (/imou|ايمو|ezviz|tapo|wifi|ptz|mc510/.test(t)) return wifi;
-    return /خارجي|out|hfw|b1|b5|2ce16|1021|1023|ipc-b|uac-b/.test(t) ? bullet : turret;
-  }
   return assortment;
 }

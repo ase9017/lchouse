@@ -1,8 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Camera, HardDrive, Usb, Network, Cable, Package, ShoppingBag, Search, X, Plus, Minus, ShieldCheck, Zap, Clock, Phone, Mail, MessageCircle } from "lucide-react";
+import { ShoppingBag, Search, ShieldCheck, Zap, Clock, Phone, Mail, MessageCircle } from "lucide-react";
 import { SiteHeader, Logo } from "@/components/SiteHeader";
 import { PRODUCTS, FEATURED, CATS, CONTACT, nf, CUR, type Product } from "@/lib/brand";
+import { Button } from "@/components/ui/button";
+import { QuoteCart } from "@/components/QuoteCart";
+import { cleanCart } from "@/lib/quote";
+import { productImage } from "@/lib/product-images";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -11,12 +15,13 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "كاميرات، مسجلات، شبكات، وإكسسوارات وأدوات إلكترونية: هاردات، فلاشات، كروت ذاكرة وأجهزة، بموديلات وأسعار واضحة." },
       { property: "og:title", content: "لايت كرنت هاوس | كاميرات المراقبة والشبكات" },
       { property: "og:description", content: "كاميرات، مسجلات، شبكات، هاردات، فلاشات وإكسسوارات إلكترونية بأسعار واضحة." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: Index,
 });
 
-const ICONS: Record<string, typeof Camera> = { cam: Camera, rec: HardDrive, net: Network, acc: Cable, misc: Package, elec: Usb };
 const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p])) as Record<string, Product>;
 
 function Index() {
@@ -26,11 +31,13 @@ function Index() {
   const [shown, setShown] = useState(24);
   const [cart, setCart] = useState<Record<string, number>>({} as Record<string, number>);
   const [open, setOpen] = useState(false);
+  const [cartReady, setCartReady] = useState(false);
 
   useEffect(() => {
-    try { setCart(JSON.parse(localStorage.getItem("lch-cart") || "{}")); } catch {}
+    try { setCart(cleanCart(JSON.parse(localStorage.getItem("lch-cart") || "{}"))); } catch {}
+    setCartReady(true);
   }, []);
-  useEffect(() => { localStorage.setItem("lch-cart", JSON.stringify(cart)); }, [cart]);
+  useEffect(() => { if (cartReady) { try { localStorage.setItem("lch-cart", JSON.stringify(cart)); } catch {} } }, [cart, cartReady]);
 
   const list = useMemo(() => {
     const t = q.trim().toLowerCase();
@@ -42,27 +49,23 @@ function Index() {
 
   const add = (id: string, d = 1) =>
     setCart((c) => {
-      const n = { ...c, [id]: (c[id] || 0) + d };
+      if (!byId[id] || (!c[id] && Object.keys(c).length >= 100)) return c;
+      const n = { ...c, [id]: Math.min(999, (c[id] || 0) + d) };
       if ((n[id] ?? 0) <= 0) delete n[id];
       return n;
     });
   const ids = Object.keys(cart).filter((k) => byId[k]);
   const count = ids.reduce((s, k) => s + (cart[k] ?? 0), 0);
-  const total = ids.reduce((s, k) => s + (cart[k] ?? 0) * byId[k]!.p, 0);
-  const sendOrder = () => {
-    const msg = "طلب جديد - لايت كرنت هاوس\n" + ids.map((k) => `• ${byId[k]!.n} × ${(cart[k] ?? 0)} = ${byId[k]!.p * (cart[k] ?? 0)} ${CUR}`).join("\n") + `\nالإجمالي: ${total} ${CUR}`;
-    window.open(`https://wa.me/${CONTACT.wa}?text=${encodeURIComponent(msg)}`, "_blank");
-  };
 
   return (
     <div className="min-h-screen">
       <div className="bg-ink py-2 text-center text-xs text-ink-foreground">معدات مختارة بعناية، ومعلومات واضحة لكل موديل</div>
       <SiteHeader
         right={
-          <button onClick={() => setOpen(true)} className="flex h-11 items-center gap-2 rounded-md bg-primary px-4 font-semibold text-primary-foreground">
+          <Button onClick={() => setOpen(true)} className="flex h-11 items-center gap-2 px-4 font-semibold">
             <ShoppingBag className="h-4 w-4" /> السلة
             <span className="grid h-6 min-w-6 place-items-center rounded-full bg-accent px-1.5 text-xs text-accent-foreground">{nf(count)}</span>
-          </button>
+          </Button>
         }
       />
 
@@ -118,14 +121,14 @@ function Index() {
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             {CATS.map(([k, l]) => (
-              <button key={k} onClick={() => { setCat(k); setShown(24); }} className={`rounded-full border px-4 py-1.5 text-sm ${cat === k ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card"}`}>{l}</button>
+              <Button key={k} variant={cat === k ? "default" : "outline"} onClick={() => { setCat(k); setShown(24); }} className="h-auto whitespace-normal rounded-full px-4 py-1.5 text-sm">{l}</Button>
             ))}
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {list.slice(0, shown).map((p) => <Card key={p.id} p={p} onAdd={() => add(p.id)} />)}
           </div>
           {!list.length && <p className="py-16 text-center text-muted-foreground">لا توجد نتائج مطابقة. جرّب اسماً أو رقم موديل آخر.</p>}
-          {list.length > shown && <div className="mt-10 text-center"><button onClick={() => setShown((s) => s + 24)} className="h-11 rounded-md border border-primary px-8 font-semibold text-primary">عرض المزيد</button></div>}
+          {list.length > shown && <div className="mt-10 text-center"><Button variant="outline" onClick={() => setShown((s) => s + 24)} className="h-11 px-8 font-semibold text-primary">عرض المزيد</Button></div>}
         </div>
       </section>
 
@@ -158,46 +161,18 @@ function Index() {
         </div>
       </footer>
 
-      {/* Cart drawer */}
-      {open && (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-ink/50" onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 start-0 flex w-full max-w-md flex-col bg-card shadow-card">
-            <div className="flex items-center justify-between border-b border-border p-5"><h3 className="text-lg font-bold">سلة الطلب</h3><button onClick={() => setOpen(false)} aria-label="إغلاق"><X /></button></div>
-            <div className="flex-1 space-y-3 overflow-y-auto p-5">
-              {!ids.length && <p className="py-10 text-center text-muted-foreground">السلة فارغة</p>}
-              {ids.map((k) => (
-                <div key={k} className="rounded-md border border-border p-3">
-                  <p className="text-sm">{byId[k]!.n}</p>
-                  <div className="mt-2 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <button onClick={() => add(k, 1)} aria-label="زيادة" className="rounded border border-border p-1"><Plus className="h-3 w-3" /></button>
-                      {nf((cart[k] ?? 0))}
-                      <button onClick={() => add(k, -1)} aria-label="إنقاص" className="rounded border border-border p-1"><Minus className="h-3 w-3" /></button>
-                    </div>
-                    <b>{nf(byId[k]!.p * (cart[k] ?? 0))} {CUR}</b>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="border-t border-border p-5">
-              <div className="flex justify-between text-lg font-bold"><span>الإجمالي</span><span>{nf(total)} {CUR}</span></div>
-              <button disabled={!ids.length} onClick={sendOrder} className="mt-4 h-12 w-full rounded-md bg-primary font-semibold text-primary-foreground disabled:opacity-50">إرسال الطلب عبر واتساب</button>
-            </div>
-          </aside>
-        </div>
-      )}
+      <QuoteCart open={open} onOpenChange={setOpen} cart={cart} onAdd={add} />
     </div>
   );
 }
 
 function Card({ p, feat, onAdd }: { p: Product; feat?: boolean; onAdd: () => void }) {
-  const I = ICONS[p.c] || Package;
   const st = p.s <= 1 ? "آخر قطعة" : p.s <= 3 ? "كمية محدودة" : "متوفر";
   return (
     <article className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition hover:-translate-y-0.5 hover:shadow-card">
-      <div className="relative grid h-36 place-items-center bg-secondary">
-        <I className="h-14 w-14 text-primary" strokeWidth={1.2} />
+      <div className="relative h-48 shrink-0 overflow-hidden bg-card">
+        <img src={productImage(p)} alt={`صورة توضيحية — ${p.n}`} loading="lazy" width={512} height={512} className="absolute inset-0 h-full w-full object-contain p-5" />
+        <span className="absolute bottom-2 start-3 rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">صورة توضيحية</span>
         {p.b && <span dir="ltr" className="absolute end-3 top-3 font-display text-[10px] font-bold tracking-widest text-muted-foreground">{p.b.toUpperCase()}</span>}
         {feat && <span className="absolute start-3 top-3 rounded bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">اختيار الفنيين</span>}
       </div>
@@ -207,7 +182,7 @@ function Card({ p, feat, onAdd }: { p: Product; feat?: boolean; onAdd: () => voi
         <span className={`mt-2 text-xs ${p.s <= 3 ? "text-destructive" : "text-primary"}`}>● {st}</span>
         <div className="mt-auto flex items-center justify-between pt-4">
           <b className="text-lg">{nf(p.p)} <small className="text-xs font-normal">{CUR}</small></b>
-          <button onClick={onAdd} className="rounded-md bg-primary px-3 py-1.5 text-sm font-semibold text-primary-foreground">أضف للسلة</button>
+          <Button size="sm" onClick={onAdd} className="font-semibold">أضف للسلة</Button>
         </div>
       </div>
     </article>
