@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { z } from "zod";
 import { Logo } from "@/components/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,13 @@ function CompanyLogin() {
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  useEffect(() => {
+    let active = true;
+    void supabase.auth.getUser().then(({ data }) => {
+      if (active && data.user) void navigate({ to: "/company-quotes", replace: true });
+    });
+    return () => { active = false; };
+  }, [navigate]);
   async function submit(e: FormEvent) {
     e.preventDefault(); setMessage("");
     const parsed = z.string().trim().email().max(255).safeParse(email);
