@@ -21,9 +21,9 @@ export function Logo({ light = false }: { light?: boolean }) {
 export function SiteHeader({ right }: { right?: React.ReactNode }) {
   return (
     <header className="sticky top-0 z-30 border-b border-border bg-background/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-6 px-5 py-3">
+      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-5 py-3 md:gap-6">
         <Logo />
-        <nav className="ms-auto hidden gap-6 text-sm font-medium md:flex">
+        <nav className="order-3 flex w-full gap-5 text-sm font-medium md:order-none md:ms-auto md:w-auto md:gap-6">
           <Link to="/" hash="products" className="hover:text-primary">المنتجات</Link>
           <Link to="/" hash="about" className="hover:text-primary">من نحن</Link>
           <Link to="/company-quotes" className="hover:text-primary">طلبات الشركة</Link>
