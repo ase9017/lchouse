@@ -15,6 +15,13 @@
       "when": 1792837995096,
       "tag": "0001_company_quote_access",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793203522474,
+      "tag": "0002_enforce_current_company_identity",
+      "breakpoints": true
     }
   ]
 }
