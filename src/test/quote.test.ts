@@ -34,6 +34,12 @@ describe("Quotation requests", () => {
     expect(url.searchParams.get("text")).toContain("A&B #1");
     expect(url.searchParams.get("text")).toContain(customer.phone);
   });
+  it("keeps prices out of the customer-facing quotation handoff", () => {
+    const text = new URL(quoteWhatsAppUrl(request, "reference")).searchParams.get("text") ?? "";
+    expect(text).not.toContain("ج.م");
+    expect(text).not.toContain("الإجمالي");
+    expect(quoteLines(request.items)[0]?.price).toBe(1080);
+  });
   it("discards corrupt persisted cart entries", () => {
     expect(cleanCart({ "00001": 2, "00002": -2, "00003": "3", "99999": 1 })).toEqual({ "00001": 2 });
   });
