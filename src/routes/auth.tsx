@@ -27,7 +27,8 @@ function CompanyLogin() {
   }, [navigate]);
   async function submit(e: FormEvent) {
     e.preventDefault(); setMessage("");
-    const parsed = z.string().trim().email().max(255).safeParse(email);
+    const login = email.trim().toLowerCase() === "admin" ? "admin@lchouse.app" : email;
+    const parsed = z.string().trim().email().max(255).safeParse(login);
     if (!parsed.success) { setMessage("اكتب بريدًا إلكترونيًا صحيحًا"); return; }
     if (mode === "signup" && !isCompanyEmail(email)) { setMessage("إنشاء حساب الإدارة متاح لبريد الشركة فقط"); return; }
     if (mode !== "reset" && !z.string().min(8).max(128).safeParse(password).success) { setMessage("كلمة المرور ٨ أحرف على الأقل"); return; }
