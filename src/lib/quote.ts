@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PRODUCTS, CONTACT, CUR, type Product } from "./brand";
+import { PRODUCTS, CONTACT, type Product } from "./brand";
 
 export const customerSchema = z.object({
   name: z.string().trim().min(2, "اكتب اسم العميل (حرفين على الأقل)").max(100, "الاسم طويل جدًا"),
@@ -35,8 +35,7 @@ export function quoteWhatsAppUrl(input: QuoteInput, reference: string) {
   const lines = quoteLines(items);
   const message = ["طلب عرض سعر - لايت كرنت هاوس", `رقم الطلب: ${reference}`, `العميل: ${customer.name}`, `الهاتف: ${customer.phone}`,
     customer.email && `البريد: ${customer.email}`, customer.company && `الشركة: ${customer.company}`, customer.address && `العنوان: ${customer.address}`,
-    ...lines.map((l) => `• ${l.name} × ${l.quantity} — ${l.subtotal} ${CUR}`),
-    `الإجمالي التقديري: ${lines.reduce((sum, line) => sum + line.subtotal, 0)} ${CUR}`,
-    customer.notes && `ملاحظات: ${customer.notes}`, "برجاء إرسال عرض السعر النهائي والتوافر بناءً على هذه المنتجات."].filter(Boolean).join("\n");
+    ...lines.map((l) => `• ${l.name} × ${l.quantity}`),
+    customer.notes && `ملاحظات: ${customer.notes}`, "برجاء إرسال عرض السعر النهائي بالأسعار والتوافر بناءً على هذه المنتجات."].filter(Boolean).join("\n");
   return `https://wa.me/${CONTACT.wa}?text=${encodeURIComponent(message)}`;
 }

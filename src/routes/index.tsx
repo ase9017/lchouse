@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ShoppingBag, Search, ShieldCheck, Zap, Clock, Phone, Mail, MessageCircle } from "lucide-react";
 import { SiteHeader, Logo } from "@/components/SiteHeader";
-import { PRODUCTS, FEATURED, CATS, CONTACT, nf, CUR, type Product } from "@/lib/brand";
+import { PRODUCTS, FEATURED, CATS, CONTACT, nf, type Product } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { QuoteCart } from "@/components/QuoteCart";
 import { cleanCart } from "@/lib/quote";
@@ -12,9 +12,9 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "لايت كرنت هاوس | كاميرات المراقبة والشبكات" },
-      { name: "description", content: "كاميرات، مسجلات، شبكات، وإكسسوارات وأدوات إلكترونية: هاردات، فلاشات، كروت ذاكرة وأجهزة، بموديلات وأسعار واضحة." },
+      { name: "description", content: "كاميرات، مسجلات، شبكات، وإكسسوارات وأدوات إلكترونية: هاردات، فلاشات، كروت ذاكرة وأجهزة، بموديلات واضحة." },
       { property: "og:title", content: "لايت كرنت هاوس | كاميرات المراقبة والشبكات" },
-      { property: "og:description", content: "كاميرات، مسجلات، شبكات، هاردات، فلاشات وإكسسوارات إلكترونية بأسعار واضحة." },
+      { property: "og:description", content: "كاميرات، مسجلات، شبكات، هاردات، فلاشات وإكسسوارات إلكترونية بموديلات واضحة." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -27,7 +27,6 @@ const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p])) as Record<string
 function Index() {
   const [cat, setCat] = useState("all");
   const [q, setQ] = useState("");
-  const [sort, setSort] = useState("def");
   const [shown, setShown] = useState(24);
   const [cart, setCart] = useState<Record<string, number>>({} as Record<string, number>);
   const [open, setOpen] = useState(false);
@@ -42,10 +41,8 @@ function Index() {
   const list = useMemo(() => {
     const t = q.trim().toLowerCase();
     const r = PRODUCTS.filter((i) => (cat === "all" || i.c === cat) && (!t || `${i.n} ${i.m} ${i.id} ${i.d}`.toLowerCase().includes(t)));
-    if (sort === "pa") r.sort((a, b) => a.p - b.p);
-    if (sort === "pd") r.sort((a, b) => b.p - a.p);
     return r;
-  }, [cat, q, sort]);
+  }, [cat, q]);
 
   const add = (id: string, d = 1) =>
     setCart((c) => {
@@ -115,9 +112,6 @@ function Index() {
               <Search className="absolute start-3 top-3.5 h-4 w-4 text-muted-foreground" />
               <input value={q} onChange={(e) => { setQ(e.target.value); setShown(24); }} placeholder="ابحث بالاسم أو رقم الموديل" className="h-11 w-full rounded-md border border-input bg-card ps-10 pe-3" />
             </div>
-            <select value={sort} onChange={(e) => setSort(e.target.value)} className="h-11 rounded-md border border-input bg-card px-3">
-              <option value="def">الترتيب الافتراضي</option><option value="pa">السعر: الأقل أولاً</option><option value="pd">السعر: الأعلى أولاً</option>
-            </select>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
             {CATS.map(([k, l]) => (
@@ -137,7 +131,7 @@ function Index() {
         <h2 className="text-3xl font-bold">من نحن</h2>
         <p className="mt-4 max-w-3xl text-lg text-muted-foreground">لايت كرنت هاوس متجر متخصص في كاميرات المراقبة وأجهزة التسجيل والشبكات وملحقات التركيب، إلى جانب الإكسسوارات والأدوات الإلكترونية عموماً مثل الهاردات والفلاشات وكروت الذاكرة والأجهزة والإكسسوارات، نخدم المركّبين وأصحاب الأعمال والأفراد. نؤمن أن الاختيار الصحيح يبدأ من معلومة واضحة.</p>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
-          {[["رؤيتنا", "أن نكون الوجهة الأولى الموثوقة لمعدات الأمن والمراقبة، حيث يجد كل مركّب وصاحب عمل ما يحتاجه بثقة."], ["رسالتنا", "توفير معدات مراقبة وشبكات بموديلات واضحة وأسعار شفافة، ومساعدة العميل على اختيار الأنسب لمشروعه."], ["هدفنا", "تبسيط رحلة الشراء، ورفع جودة التركيبات، وبناء علاقات طويلة قائمة على الوضوح والالتزام."]].map(([t, d], i) => (
+          {[["رؤيتنا", "أن نكون الوجهة الأولى الموثوقة لمعدات الأمن والمراقبة، حيث يجد كل مركّب وصاحب عمل ما يحتاجه بثقة."], ["رسالتنا", "توفير معدات مراقبة وشبكات بموديلات واضحة ومعلومات دقيقة عن كل جهاز، ومساعدة العميل على اختيار الأنسب لمشروعه."], ["هدفنا", "تبسيط رحلة الشراء، ورفع جودة التركيبات، وبناء علاقات طويلة قائمة على الوضوح والالتزام."]].map(([t, d], i) => (
             <div key={t} className="rounded-lg border border-border bg-card p-6 shadow-card">
               <span className="font-display text-sm font-bold text-primary">0{i + 1}</span>
               <h3 className="mt-2 text-xl font-bold">{t}</h3><p className="mt-2 text-muted-foreground">{d}</p>
@@ -149,7 +143,7 @@ function Index() {
       {/* Contact */}
       <footer className="bg-ink text-ink-foreground">
         <div className="mx-auto grid max-w-6xl gap-8 px-5 py-14 md:grid-cols-2">
-          <div><Logo light /><p className="mt-4 text-sm opacity-70">الأسعار والكميات حسب آخر جرد للمخزن وقد تتغير دون إشعار.</p></div>
+          <div><Logo light /><p className="mt-4 text-sm opacity-70">توافر المنتجات والكميات حسب آخر جرد للمخزن وقد يتغير دون إشعار؛ تُرسل الأسعار في عرض السعر.</p></div>
           <div>
             <h2 className="text-2xl font-bold">تواصل معنا</h2>
             <div className="mt-4 flex flex-wrap gap-3">
@@ -181,7 +175,7 @@ function Card({ p, feat, onAdd }: { p: Product; feat?: boolean; onAdd: () => voi
         {p.m && <span dir="ltr" className="mt-1 self-start rounded bg-muted px-2 font-display text-xs">{p.m}</span>}
         <span className={`mt-2 text-xs ${p.s <= 3 ? "text-destructive" : "text-primary"}`}>● {st}</span>
         <div className="mt-auto flex items-center justify-between pt-4">
-          <b className="text-lg">{nf(p.p)} <small className="text-xs font-normal">{CUR}</small></b>
+          <span className="text-xs text-muted-foreground">تُرسل الأسعار في عرض السعر</span>
           <Button size="sm" onClick={onAdd} className="font-semibold">أضف للسلة</Button>
         </div>
       </div>
