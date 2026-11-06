@@ -51,6 +51,10 @@ function Index() {
       if ((n[id] ?? 0) <= 0) delete n[id];
       return n;
     });
+  const addFromCatalog = (id: string, source: "featured" | "catalog") => {
+    add(id);
+    window.__lovableEvents?.track?.("project.product_added_to_cart", { product_id: id, category: byId[id]?.c ?? "", source });
+  };
   const ids = Object.keys(cart).filter((k) => byId[k]);
   const count = ids.reduce((s, k) => s + (cart[k] ?? 0), 0);
 
@@ -96,7 +100,7 @@ function Index() {
         <p className="text-sm font-semibold text-primary">مختارة للميدان</p>
         <h2 className="mt-1 text-3xl font-bold">معدات تثق بها في كل تركيب</h2>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURED.map((id) => byId[id] && <Card key={id} p={byId[id]} feat onAdd={() => add(id)} />)}
+          {FEATURED.map((id) => byId[id] && <Card key={id} p={byId[id]} feat onAdd={() => addFromCatalog(id, "featured")} />)}
         </div>
       </section>
 
@@ -119,7 +123,7 @@ function Index() {
             ))}
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {list.slice(0, shown).map((p) => <Card key={p.id} p={p} onAdd={() => add(p.id)} />)}
+            {list.slice(0, shown).map((p) => <Card key={p.id} p={p} onAdd={() => addFromCatalog(p.id, "catalog")} />)}
           </div>
           {!list.length && <p className="py-16 text-center text-muted-foreground">لا توجد نتائج مطابقة. جرّب اسماً أو رقم موديل آخر.</p>}
           {list.length > shown && <div className="mt-10 text-center"><Button variant="outline" onClick={() => setShown((s) => s + 24)} className="h-11 px-8 font-semibold text-primary">عرض المزيد</Button></div>}

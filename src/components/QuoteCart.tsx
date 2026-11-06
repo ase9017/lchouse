@@ -17,6 +17,10 @@ export function QuoteCart({ open, onOpenChange, cart, onAdd }: { open: boolean; 
   const [requestKey, setRequestKey] = useState("");
   const [result, setResult] = useState<{ id: string } | null>(null);
   const save = useServerFn(submitQuote);
+  const edit = (id: string, delta: number, action: "increase" | "decrease" | "remove") => {
+    onAdd(id, delta);
+    window.__lovableEvents?.track?.("project.cart_item_edited", { product_id: id, action });
+  };
   const products = PRODUCTS.filter((p) => (cart[p.id] ?? 0) > 0);
   const update = (key: keyof Customer, value: string) => { setCustomer((c) => ({ ...c, [key]: value })); setErrors((e) => ({ ...e, [key]: "", submit: "" })); setRequestKey(""); };
   const submit = async (event: FormEvent) => {
@@ -35,6 +39,7 @@ export function QuoteCart({ open, onOpenChange, cart, onAdd }: { open: boolean; 
     try {
       const saved = await save({ data: checked.data });
       setResult({ id: saved.id });
+      window.__lovableEvents?.track?.("project.quote_request_submitted", { item_count: input.items.length, unit_count: input.items.reduce((s, i) => s + i.quantity, 0) });
       setStep("success");
     } catch { setErrors({ submit: "تعذر حفظ طلبك الآن. جرّب مرة أخرى؛ المنتجات ما زالت في السلة." }); }
     finally { setBusy(false); }
@@ -51,8 +56,8 @@ export function QuoteCart({ open, onOpenChange, cart, onAdd }: { open: boolean; 
           {products.map((p) => <div key={p.id} className="flex gap-3 border-b border-border pb-4">
             <img src={productImage(p)} width={80} height={80} alt="صورة توضيحية" className="h-20 w-20 shrink-0 rounded-md object-contain" />
             <div className="min-w-0 flex-1"><p className="break-words text-sm font-semibold">{p.n}</p><div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2"><Button variant="outline" size="icon" onClick={() => onAdd(p.id, 1)} disabled={(cart[p.id] ?? 0) >= 999} aria-label="زيادة"><Plus /></Button><span className="min-w-6 text-center">{nf(cart[p.id] ?? 0)}</span><Button variant="outline" size="icon" onClick={() => onAdd(p.id, -1)} aria-label="إنقاص"><Minus /></Button></div>
-              <Button variant="ghost" size="sm" onClick={() => onAdd(p.id, -(cart[p.id] ?? 0))} className="text-destructive"><Trash2 />حذف</Button>
+              <div className="flex items-center gap-2"><Button variant="outline" size="icon" onClick={() => edit(p.id, 1, "increase")} disabled={(cart[p.id] ?? 0) >= 999} aria-label="زيادة"><Plus /></Button><span className="min-w-6 text-center">{nf(cart[p.id] ?? 0)}</span><Button variant="outline" size="icon" onClick={() => edit(p.id, -1, (cart[p.id] ?? 0) <= 1 ? "remove" : "decrease")} aria-label="إنقاص"><Minus /></Button></div>
+              <Button variant="ghost" size="sm" onClick={() => edit(p.id, -(cart[p.id] ?? 0), "remove")} className="text-destructive"><Trash2 />حذف</Button>
             </div></div>
           </div>)}
         </div>

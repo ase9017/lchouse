@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "events": {
+    "project.cart_item_edited": {
+      "event_schema_version": 1,
+      "description": "A visitor changed a product quantity or removed it inside the quotation cart.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "product_id",
+          "action"
+        ],
+        "properties": {
+          "product_id": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "increase",
+              "decrease",
+              "remove"
+            ]
+          }
+        }
+      }
+    },
+    "project.product_added_to_cart": {
+      "event_schema_version": 1,
+      "description": "A visitor added a product to the quotation cart from the product cards.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "product_id",
+          "category",
+          "source"
+        ],
+        "properties": {
+          "product_id": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "featured",
+              "catalog"
+            ]
+          }
+        }
+      }
+    },
+    "project.quote_request_submitted": {
+      "event_schema_version": 1,
+      "description": "A quotation request was saved successfully for the company.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item_count",
+          "unit_count"
+        ],
+        "properties": {
+          "item_count": {
+            "type": "number"
+          },
+          "unit_count": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}
