@@ -6,6 +6,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { ALL_CATEGORY, AVAILABILITY_LABELS, CONTACT, nf, type Product } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { QuoteCart } from "@/components/QuoteCart";
+import { ChatWidget } from "@/components/ChatWidget";
 import { cleanCart } from "@/lib/quote";
 import { productImage, hasRealPhoto } from "@/lib/product-images";
 import { catalogQuery } from "@/lib/catalog.functions";
@@ -58,7 +59,7 @@ function Index() {
       if ((n[id] ?? 0) <= 0) delete n[id];
       return n;
     });
-  const addFromCatalog = (id: string, source: "featured" | "catalog") => {
+  const addFromCatalog = (id: string, source: "featured" | "catalog" | "assistant") => {
     add(id);
     window.__lovableEvents?.track?.("project.product_added_to_cart", { product_id: id, category: byId[id]?.c ?? "", source });
   };
@@ -167,6 +168,7 @@ function Index() {
       </footer>
 
       <QuoteCart open={open} onOpenChange={setOpen} cart={cart} onAdd={add} products={PRODUCTS} />
+      <ChatWidget onAdd={(id) => addFromCatalog(id, "assistant")} />
     </div>
   );
 }

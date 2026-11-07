@@ -43,6 +43,13 @@
       "when": 1794075083783,
       "tag": "0005_seed_products",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794075374747,
+      "tag": "0006_admin_username_role",
+      "breakpoints": true
     }
   ]
 }

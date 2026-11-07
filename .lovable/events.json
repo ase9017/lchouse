@@ -56,7 +56,8 @@
             "type": "string",
             "enum": [
               "featured",
-              "catalog"
+              "catalog",
+              "assistant"
             ]
           }
         }
@@ -81,6 +82,26 @@
             "type": "number"
           },
           "unit_count": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "project.assistant_message_sent": {
+      "event_schema_version": 1,
+      "description": "A visitor sent a message to the on-site product assistant.",
+      "privacy": {
+        "contains_pii": false,
+        "purpose": "product_analytics"
+      },
+      "properties_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "turn"
+        ],
+        "properties": {
+          "turn": {
             "type": "number"
           }
         }
