@@ -1,7 +1,3 @@
--- Product catalogue moved from the bundled products.json into the database.
--- Prices and exact stock stay private: visitors only receive the safe public
--- fields through the catalog server function; administrators manage everything.
-
 CREATE TABLE public.product_categories (
  key text PRIMARY KEY CHECK (key ~ '^[a-z]{2,20}$'),
  label text NOT NULL CHECK (char_length(label) BETWEEN 2 AND 80),
@@ -34,10 +30,10 @@ END;
 $$;
 CREATE TRIGGER products_touch_updated_at BEFORE UPDATE ON public.products FOR EACH ROW EXECUTE FUNCTION public.touch_updated_at();
 
-ALTER TABLE public.product_categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 GRANT ALL ON public.product_categories, public.products TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON public.product_categories, public.products TO authenticated;
+ALTER TABLE public.product_categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Company administrators read categories" ON public.product_categories FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin'));
 CREATE POLICY "Company administrators insert categories" ON public.product_categories FOR INSERT TO authenticated WITH CHECK (public.has_role(auth.uid(), 'admin'));
@@ -50,12 +46,3 @@ CREATE POLICY "Company administrators update products" ON public.products FOR UP
 CREATE POLICY "Company administrators delete products" ON public.products FOR DELETE TO authenticated USING (public.has_role(auth.uid(), 'admin'));
 
 COMMENT ON TABLE public.products IS 'Product catalogue. Price and stock are private; visitors read only safe fields through the public catalog server function.';
-
--- Public bucket for real product photos uploaded by administrators.
-INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-VALUES ('product-images', 'product-images', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp'])
-ON CONFLICT (id) DO NOTHING;
-CREATE POLICY "Product images are public" ON storage.objects FOR SELECT USING (bucket_id = 'product-images');
-CREATE POLICY "Company administrators upload product images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'product-images' AND public.has_role(auth.uid(), 'admin'));
-CREATE POLICY "Company administrators update product images" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'product-images' AND public.has_role(auth.uid(), 'admin'));
-CREATE POLICY "Company administrators delete product images" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'product-images' AND public.has_role(auth.uid(), 'admin'));

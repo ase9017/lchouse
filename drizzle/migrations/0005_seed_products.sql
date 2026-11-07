@@ -1,4 +1,3 @@
--- Seed: categories and the 362 products previously bundled in src/lib/products.json.
 INSERT INTO public.product_categories (key, label, sort_order) VALUES
  ('cam', 'كاميرات المراقبة', 1),
  ('rec', 'مسجلات DVR / NVR', 2),
@@ -191,7 +190,7 @@ INSERT INTO public.products (id, name, brand, category, model, description, pric
  ('00180', 'DH-HAC-B1A21P-U-IL داهوا 2ميجا الوان', 'Dahua', 'cam', 'DH-HAC-B1A21P-U-IL', 'كاميرا مراقبة تناظرية HD بدقة 2 ميجا بكسل، تصوير ملوّن ليلاً، من Dahua، موديل DH-HAC-B1A21P-U-IL.', 1080.0, 6, false),
  ('00181', 'DH-HAC-HFW1200CLP-IL-A كاميرا دهوا اللوان مايك', 'Dahua', 'cam', 'DH-HAC-HFW1200CLP-IL-A', 'كاميرا مراقبة تناظرية HD، مزوّدة بميكروفون، من Dahua، موديل DH-HAC-HFW1200CLP-IL-A.', 1260.0, 7, false),
  ('00182', 'Video Balun + Power', '', 'acc', '', 'من ملحقات التركيب والتشغيل.', 174.0, 5, false),
- ('00183', 'Camera PTZ 1 MP H8F', '', 'cam', '', 'كاميرا مراقبة تناظرية HD بدقة 1 ميجا بكسل.', 2878.7999999999997, 1, false),
+ ('00183', 'Camera PTZ 1 MP H8F', '', 'cam', '', 'كاميرا مراقبة تناظرية HD بدقة 1 ميجا بكسل.', 2878.80, 1, false),
  ('00184', 'Camera Imou Cell 2 4MP', 'Imou', 'cam', '', 'كاميرا مراقبة تناظرية HD بدقة 4 ميجا بكسل، من Imou.', 5340.0, 2, false),
  ('00185', 'Camera I Sharp 2MP Fish Eye', '', 'cam', '', 'كاميرا مراقبة تناظرية HD بدقة 2 ميجا بكسل.', 1260.0, 1, false),
  ('00186', 'Camera IP 8D06B 2MP France', '', 'cam', 'D06B', 'كاميرا مراقبة IP (شبكية) بدقة 2 ميجا بكسل، موديل D06B.', 1920.0, 1, false),
@@ -276,7 +275,7 @@ INSERT INTO public.products (id, name, brand, category, model, description, pric
  ('00265', 'HDMI Spliter Local', '', 'misc', '', 'صنف متنوع من مخزن المتجر.', 240.0, 1, false),
  ('00266', 'PS2 Cable', '', 'acc', '', 'من ملحقات التركيب والتشغيل.', 180.0, 1, false),
  ('00267', 'Extender D Link N3001325', 'D-Link', 'net', 'N3001325', 'جهاز شبكات، من D-Link، موديل N3001325.', 1020.0, 1, false),
- ('00268', 'Key Board Computer', '', 'misc', '', 'صنف متنوع من مخزن المتجر.', 142.79999999999998, 2, false),
+ ('00268', 'Key Board Computer', '', 'misc', '', 'صنف متنوع من مخزن المتجر.', 142.80, 2, false),
  ('00269', 'Microphone Suree LX 77', '', 'misc', '', 'صنف متنوع من مخزن المتجر.', 1440.0, 1, false),
  ('00270', 'Android Box', '', 'acc', '', 'من ملحقات التركيب والتشغيل.', 900.0, 1, false),
  ('00271', 'Video Intercom Analog', '', 'misc', '', 'صنف متنوع من مخزن المتجر.', 2400.0, 1, false),
