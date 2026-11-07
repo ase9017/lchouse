@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { PRODUCTS, CONTACT, type Product } from "./brand";
+import { CONTACT } from "./brand";
 
 export const customerSchema = z.object({
   name: z.string().trim().min(2, "اكتب اسم العميل (حرفين على الأقل)").max(100, "الاسم طويل جدًا"),
@@ -16,26 +16,29 @@ export const quoteSchema = z.object({
 }).strict();
 export type Customer = z.infer<typeof customerSchema>;
 export type QuoteInput = z.infer<typeof quoteSchema>;
+/** Server-side catalogue row used to price a quote (never sent to visitors). */
+export type PricedProduct = { id: string; name: string; model: string; price: number };
 
-export function quoteLines(items: QuoteInput["items"], products: Product[] = PRODUCTS) {
+export function quoteLines(items: QuoteInput["items"], products: PricedProduct[]) {
   const seen = new Set<string>();
   return items.map(({ id, quantity }) => {
     const p = products.find((product) => product.id === id);
     if (!p || seen.has(id)) throw new Error("منتج غير صالح أو مكرر");
     seen.add(id);
-    return { id, name: p.n, model: p.m, quantity, price: p.p, subtotal: Math.round(p.p * quantity * 100) / 100 };
+    const price = Number(p.price);
+    return { id, name: p.name, model: p.model, quantity, price, subtotal: Math.round(price * quantity * 100) / 100 };
   });
 }
-export function cleanCart(value: unknown): Record<string, number> {
+export function cleanCart(value: unknown, validIds: Set<string>): Record<string, number> {
   if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  return Object.fromEntries(Object.entries(value).filter(([id, q]) => PRODUCTS.some((p) => p.id === id) && typeof q === "number" && Number.isInteger(q) && q >= 1 && q <= 999).slice(0, 100));
+  return Object.fromEntries(Object.entries(value).filter(([id, q]) => validIds.has(id) && typeof q === "number" && Number.isInteger(q) && q >= 1 && q <= 999).slice(0, 100));
 }
-export function quoteWhatsAppUrl(input: QuoteInput, reference: string) {
+export function quoteWhatsAppUrl(input: QuoteInput, reference: string, products: { id: string; n: string }[]) {
   const { customer, items } = quoteSchema.parse(input);
-  const lines = quoteLines(items);
+  const names = new Map(products.map((p) => [p.id, p.n]));
   const message = ["طلب عرض سعر - لايت كرنت هاوس", `رقم الطلب: ${reference}`, `العميل: ${customer.name}`, `الهاتف: ${customer.phone}`,
     customer.email && `البريد: ${customer.email}`, customer.company && `الشركة: ${customer.company}`, customer.address && `العنوان: ${customer.address}`,
-    ...lines.map((l) => `• ${l.name} × ${l.quantity}`),
+    ...items.map((l) => `• ${names.get(l.id) ?? l.id} × ${l.quantity}`),
     customer.notes && `ملاحظات: ${customer.notes}`, "برجاء إرسال عرض السعر النهائي بالأسعار والتوافر بناءً على هذه المنتجات."].filter(Boolean).join("\n");
   return `https://wa.me/${CONTACT.wa}?text=${encodeURIComponent(message)}`;
 }

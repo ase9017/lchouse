@@ -29,6 +29,20 @@
       "when": 1793818306083,
       "tag": "0003_allow_admin_username_account",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794073202493,
+      "tag": "0004_products_catalog",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794073202494,
+      "tag": "0005_seed_products",
+      "breakpoints": true
     }
   ]
 }

@@ -5,9 +5,11 @@ import { quoteSchema, quoteLines } from "./quote";
 export const submitQuote = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => quoteSchema.parse(input))
   .handler(async ({ data }) => {
-    const items = quoteLines(data.items);
-    const total = Math.round(items.reduce((sum, line) => sum + line.subtotal, 0) * 100) / 100;
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const catalog = await supabaseAdmin.from("products").select("id, name, model, price").eq("active", true).in("id", data.items.map((i) => i.id));
+    if (catalog.error) throw new Error("تعذر تحميل المنتجات؛ حاول مرة أخرى");
+    const items = quoteLines(data.items, catalog.data);
+    const total = Math.round(items.reduce((sum, line) => sum + line.subtotal, 0) * 100) / 100;
     const { data: row, error } = await supabaseAdmin.from("quote_requests").insert({
       request_key: data.requestKey,
       customer_name: data.customer.name,

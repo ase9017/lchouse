@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin-products'
 import { Route as AuthenticatedCompanyQuotesRouteImport } from './routes/_authenticated/company-quotes'
 
 const IndexRoute = IndexRouteImport.update({
@@ -34,6 +35,12 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminProductsRoute =
+  AuthenticatedAdminProductsRouteImport.update({
+    id: '/admin-products',
+    path: '/admin-products',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCompanyQuotesRoute =
   AuthenticatedCompanyQuotesRouteImport.update({
     id: '/company-quotes',
@@ -45,12 +52,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin-products': typeof AuthenticatedAdminProductsRoute
   '/company-quotes': typeof AuthenticatedCompanyQuotesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin-products': typeof AuthenticatedAdminProductsRoute
   '/company-quotes': typeof AuthenticatedCompanyQuotesRoute
 }
 export interface FileRoutesById {
@@ -59,19 +68,22 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin-products': typeof AuthenticatedAdminProductsRoute
   '/_authenticated/company-quotes': typeof AuthenticatedCompanyQuotesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/reset-password' | '/company-quotes'
+  fullPaths:
+    '/' | '/auth' | '/reset-password' | '/admin-products' | '/company-quotes'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/reset-password' | '/company-quotes'
+  to: '/' | '/auth' | '/reset-password' | '/admin-products' | '/company-quotes'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/admin-products'
     | '/_authenticated/company-quotes'
   fileRoutesById: FileRoutesById
 }
@@ -112,6 +124,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin-products': {
+      id: '/_authenticated/admin-products'
+      path: '/admin-products'
+      fullPath: '/admin-products'
+      preLoaderRoute: typeof AuthenticatedAdminProductsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/company-quotes': {
       id: '/_authenticated/company-quotes'
       path: '/company-quotes'
@@ -123,10 +142,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRoute
   AuthenticatedCompanyQuotesRoute: typeof AuthenticatedCompanyQuotesRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminProductsRoute: AuthenticatedAdminProductsRoute,
   AuthenticatedCompanyQuotesRoute: AuthenticatedCompanyQuotesRoute,
 }
 

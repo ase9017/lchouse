@@ -3,13 +3,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { Plus, Minus, FileText, ArrowRight, CheckCircle2, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { PRODUCTS, nf } from "@/lib/brand";
+import { nf, type Product } from "@/lib/brand";
 import { productImage } from "@/lib/product-images";
 import { customerSchema, quoteSchema, type Customer, type QuoteInput } from "@/lib/quote";
 import { submitQuote } from "@/lib/quotes.functions";
 
 const emptyCustomer: Customer = { name: "", phone: "", email: "", company: "", address: "", notes: "" };
-export function QuoteCart({ open, onOpenChange, cart, onAdd }: { open: boolean; onOpenChange: (open: boolean) => void; cart: Record<string, number>; onAdd: (id: string, delta: number) => void }) {
+export function QuoteCart({ open, onOpenChange, cart, onAdd, products: catalog }: { open: boolean; onOpenChange: (open: boolean) => void; cart: Record<string, number>; onAdd: (id: string, delta: number) => void; products: Product[] }) {
   const [step, setStep] = useState<"cart" | "details" | "success">("cart");
   const [customer, setCustomer] = useState<Customer>(emptyCustomer);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -21,7 +21,7 @@ export function QuoteCart({ open, onOpenChange, cart, onAdd }: { open: boolean; 
     onAdd(id, delta);
     window.__lovableEvents?.track?.("project.cart_item_edited", { product_id: id, action });
   };
-  const products = PRODUCTS.filter((p) => (cart[p.id] ?? 0) > 0);
+  const products = catalog.filter((p) => (cart[p.id] ?? 0) > 0);
   const update = (key: keyof Customer, value: string) => { setCustomer((c) => ({ ...c, [key]: value })); setErrors((e) => ({ ...e, [key]: "", submit: "" })); setRequestKey(""); };
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -54,7 +54,7 @@ export function QuoteCart({ open, onOpenChange, cart, onAdd }: { open: boolean; 
         <div className="flex-1 space-y-4 overflow-y-auto p-5">
           {!products.length && <p className="py-12 text-center text-muted-foreground">السلة فارغة</p>}
           {products.map((p) => <div key={p.id} className="flex gap-3 border-b border-border pb-4">
-            <img src={productImage(p)} width={80} height={80} alt="صورة توضيحية" className="h-20 w-20 shrink-0 rounded-md object-contain" />
+            <img src={productImage(p)} width={80} height={80} alt={p.img ? p.n : "صورة توضيحية"} className="h-20 w-20 shrink-0 rounded-md object-contain" />
             <div className="min-w-0 flex-1"><p className="break-words text-sm font-semibold">{p.n}</p><div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2"><Button variant="outline" size="icon" onClick={() => edit(p.id, 1, "increase")} disabled={(cart[p.id] ?? 0) >= 999} aria-label="زيادة"><Plus /></Button><span className="min-w-6 text-center">{nf(cart[p.id] ?? 0)}</span><Button variant="outline" size="icon" onClick={() => edit(p.id, -1, (cart[p.id] ?? 0) <= 1 ? "remove" : "decrease")} aria-label="إنقاص"><Minus /></Button></div>
               <Button variant="ghost" size="sm" onClick={() => edit(p.id, -(cart[p.id] ?? 0), "remove")} className="text-destructive"><Trash2 />حذف</Button>

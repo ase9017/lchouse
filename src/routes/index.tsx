@@ -2,13 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ShoppingBag, Search, ShieldCheck, Zap, Clock, Phone, Mail, MessageCircle } from "lucide-react";
 import { SiteHeader, Logo } from "@/components/SiteHeader";
-import { PRODUCTS, FEATURED, CATS, CONTACT, nf, type Product } from "@/lib/brand";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { ALL_CATEGORY, AVAILABILITY_LABELS, CONTACT, nf, type Product } from "@/lib/brand";
 import { Button } from "@/components/ui/button";
 import { QuoteCart } from "@/components/QuoteCart";
 import { cleanCart } from "@/lib/quote";
-import { productImage } from "@/lib/product-images";
+import { productImage, hasRealPhoto } from "@/lib/product-images";
+import { catalogQuery } from "@/lib/catalog.functions";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(catalogQuery),
   head: () => ({
     meta: [
       { title: "لايت كرنت هاوس | كاميرات المراقبة والشبكات" },
@@ -22,9 +25,12 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const byId = Object.fromEntries(PRODUCTS.map((p) => [p.id, p])) as Record<string, Product>;
-
 function Index() {
+  const { data: catalog } = useSuspenseQuery(catalogQuery);
+  const PRODUCTS = catalog.products;
+  const CATS = useMemo(() => [ALL_CATEGORY, ...catalog.categories], [catalog.categories]);
+  const byId = useMemo(() => Object.fromEntries(PRODUCTS.map((p) => [p.id, p])) as Record<string, Product>, [PRODUCTS]);
+  const featured = useMemo(() => PRODUCTS.filter((p) => p.f), [PRODUCTS]);
   const [cat, setCat] = useState("all");
   const [q, setQ] = useState("");
   const [shown, setShown] = useState(24);
@@ -33,8 +39,9 @@ function Index() {
   const [cartReady, setCartReady] = useState(false);
 
   useEffect(() => {
-    try { setCart(cleanCart(JSON.parse(localStorage.getItem("lch-cart") || "{}"))); } catch {}
+    try { setCart(cleanCart(JSON.parse(localStorage.getItem("lch-cart") || "{}"), new Set(PRODUCTS.map((p) => p.id)))); } catch {}
     setCartReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- restore the saved cart once on mount
   }, []);
   useEffect(() => { if (cartReady) { try { localStorage.setItem("lch-cart", JSON.stringify(cart)); } catch {} } }, [cart, cartReady]);
 
@@ -42,7 +49,7 @@ function Index() {
     const t = q.trim().toLowerCase();
     const r = PRODUCTS.filter((i) => (cat === "all" || i.c === cat) && (!t || `${i.n} ${i.m} ${i.id} ${i.d}`.toLowerCase().includes(t)));
     return r;
-  }, [cat, q]);
+  }, [PRODUCTS, cat, q]);
 
   const add = (id: string, d = 1) =>
     setCart((c) => {
@@ -100,7 +107,7 @@ function Index() {
         <p className="text-sm font-semibold text-primary">مختارة للميدان</p>
         <h2 className="mt-1 text-3xl font-bold">معدات تثق بها في كل تركيب</h2>
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURED.map((id) => byId[id] && <Card key={id} p={byId[id]} feat onAdd={() => addFromCatalog(id, "featured")} />)}
+          {featured.map((p) => <Card key={p.id} p={p} feat onAdd={() => addFromCatalog(p.id, "featured")} />)}
         </div>
       </section>
 
@@ -118,7 +125,7 @@ function Index() {
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {CATS.map(([k, l]) => (
+            {CATS.map(({ key: k, label: l }) => (
               <Button key={k} variant={cat === k ? "default" : "outline"} onClick={() => { setCat(k); setShown(24); }} className="h-auto whitespace-normal rounded-full px-4 py-1.5 text-sm">{l}</Button>
             ))}
           </div>
@@ -159,25 +166,25 @@ function Index() {
         </div>
       </footer>
 
-      <QuoteCart open={open} onOpenChange={setOpen} cart={cart} onAdd={add} />
+      <QuoteCart open={open} onOpenChange={setOpen} cart={cart} onAdd={add} products={PRODUCTS} />
     </div>
   );
 }
 
 function Card({ p, feat, onAdd }: { p: Product; feat?: boolean; onAdd: () => void }) {
-  const st = p.s <= 1 ? "آخر قطعة" : p.s <= 3 ? "كمية محدودة" : "متوفر";
+  const st = AVAILABILITY_LABELS[p.a];
   return (
     <article className="flex flex-col overflow-hidden rounded-lg border border-border bg-card transition hover:-translate-y-0.5 hover:shadow-card">
       <div className="relative h-48 shrink-0 overflow-hidden bg-card">
-        <img src={productImage(p)} alt={`صورة توضيحية — ${p.n}`} loading="lazy" width={512} height={512} className="absolute inset-0 h-full w-full object-contain p-5" />
-        <span className="absolute bottom-2 start-3 rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">صورة توضيحية</span>
+        <img src={productImage(p)} alt={hasRealPhoto(p) ? p.n : `صورة توضيحية — ${p.n}`} loading="lazy" width={512} height={512} className="absolute inset-0 h-full w-full object-contain p-5" />
+        {!hasRealPhoto(p) && <span className="absolute bottom-2 start-3 rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">صورة توضيحية</span>}
         {p.b && <span dir="ltr" className="absolute end-3 top-3 font-display text-[10px] font-bold tracking-widest text-muted-foreground">{p.b.toUpperCase()}</span>}
         {feat && <span className="absolute start-3 top-3 rounded bg-accent px-2 py-0.5 text-xs font-semibold text-accent-foreground">اختيار الفنيين</span>}
       </div>
       <div className="flex flex-1 flex-col p-4">
         <h3 className="line-clamp-2 font-semibold">{p.n}</h3>
         {p.m && <span dir="ltr" className="mt-1 self-start rounded bg-muted px-2 font-display text-xs">{p.m}</span>}
-        <span className={`mt-2 text-xs ${p.s <= 3 ? "text-destructive" : "text-primary"}`}>● {st}</span>
+        <span className={`mt-2 text-xs ${p.a !== "in" ? "text-destructive" : "text-primary"}`}>● {st}</span>
         <div className="mt-auto flex items-center justify-between pt-4">
           <span className="text-xs text-muted-foreground">تُرسل الأسعار في عرض السعر</span>
           <Button size="sm" onClick={onAdd} className="font-semibold">أضف للسلة</Button>

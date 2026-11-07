@@ -52,7 +52,13 @@ const RULES: [RegExp, string][] = [
   [/rack|راك/, rack],
 ];
 
-export function productImage(p: Product): string {
+/** True when the product has a real uploaded photo rather than a type illustration. */
+export function hasRealPhoto(p: Pick<Product, "img">): boolean {
+  return !!p.img;
+}
+
+export function productImage(p: Pick<Product, "n" | "m" | "c"> & { img?: string | null }): string {
+  if (p.img) return p.img;
   const t = `${p.n} ${p.m}`.toLowerCase().trim();
   if (p.c !== "cam" || !/حامل|وصلة/.test(t)) {
     if (p.c === "cam" || /camera|كاميرا|tc 70|tapo|web cam|wi fi 3 mp|sky worth/.test(t)) {
