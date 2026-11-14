@@ -25,8 +25,9 @@ export function SiteHeader({ right }: { right?: React.ReactNode }) {
         <Logo />
         <nav className="order-3 flex w-full gap-5 text-sm font-medium md:order-none md:ms-auto md:w-auto md:gap-6">
           <Link to="/" hash="products" className="hover:text-primary">المنتجات</Link>
+          <Link to="/" hash="how" className="hover:text-primary">طريقة الطلب</Link>
           <Link to="/" hash="about" className="hover:text-primary">من نحن</Link>
-          <Link to="/company-quotes" className="hover:text-primary">طلبات الشركة</Link>
+          <Link to="/" hash="contact" className="hover:text-primary">تواصل معنا</Link>
         </nav>
         {right}
       </div>
